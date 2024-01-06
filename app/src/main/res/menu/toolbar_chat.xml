@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="get_back"
+        android:id="@+id/get_back_arrow_button"
+        android:icon="@drawable/get_back_arrow_icon"
+        app:showAsAction="always"
+        />
+    <item
+        android:title="Ideas to say"
+        android:id="@+id/ideas_button"
+        android:icon="@drawable/idea_icon"
+        app:showAsAction="withText"/>
+    <item android:title="Save chat context"
+        android:id="@+id/save_context_button"
+        android:icon="@drawable/save_chat_icon"/>
+</menu>
