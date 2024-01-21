@@ -1,4 +1,4 @@
-package com.example.app;
+package com.juanfruto.app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,11 +10,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.Button;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
 
 interface IApiCallback {
     void onApiSuccess(InputStream inputStream);
@@ -54,12 +53,25 @@ public class MainActivity extends AppCompatActivity implements IApiCallback {
     public void onApiSuccess(InputStream inputStream) {
         runOnUiThread(() -> {
             try {
+                // save the audio as a temp file
+                File tempFile = File.createTempFile("temp_audio", ".mp3", getCacheDir());
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                byte[] buffer = new byte[1024];
+                int read;
+
+                while ((read = inputStream.read(buffer)) != -1) {
+                    fos.write(buffer, 0, read);
+                }
+                fos.close();
+                Log.d("Audio Path", tempFile.getAbsolutePath());
+
+                // media player settings
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC) // try speech later
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .build());
-                mediaPlayer.setDataSource(inputStream.toString());
+                mediaPlayer.setDataSource(tempFile.getAbsolutePath());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
             } catch (IOException e) {

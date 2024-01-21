@@ -1,4 +1,4 @@
-package com.example.app;
+package com.juanfruto.app;
 
 import android.content.Context;
 

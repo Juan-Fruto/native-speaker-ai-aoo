@@ -1,8 +1,6 @@
-package com.example.app;
+package com.juanfruto.app;
 
 import android.util.Log;
-
-import java.io.IOException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -13,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIFetching {
     private IApiCallback context;
-    private static final String BASE_URL = "http://192.168.0.23:8080/";
+    private static final String BASE_URL = "http://192.168.1.7:8080/api/v1/";
     public APIFetching(IApiCallback context){
         this.context = context;
     }
@@ -41,12 +39,8 @@ public class APIFetching {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    try {
-                        Log.d("response", response.body().string());
-                        context.onApiSuccess(response.body().byteStream());
-                    } catch (IOException e) {
-                        context.onApiFailure(e.getMessage());
-                    }
+                    Log.d("response", response.body().toString());
+                    context.onApiSuccess(response.body().byteStream());
                 } else {
                     Log.d("server error", response.toString());
                 }
