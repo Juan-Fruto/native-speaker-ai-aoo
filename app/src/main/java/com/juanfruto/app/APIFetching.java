@@ -2,6 +2,9 @@ package com.juanfruto.app;
 
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -12,21 +15,30 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIFetching {
     private IApiCallback context;
     private static final String BASE_URL = "http://192.168.1.7:8080/api/v1/";
+    private static final int TIMEOUT_SECONDS = 1800;
     public APIFetching(IApiCallback context){
         this.context = context;
     }
-    public void message(String userMessage){
+    public void message(String userMessage, String gender, String language){
         // request body
-        Message message = new Message().setRole("user").setContent("Hi there");
+        Message message = new Message().setRole("user").setContent(userMessage);
         ChatRequest chatRequest = new ChatRequest()
                 .setPayload(new Message[]{message})
-                .setGender("female")
-                .setLanguage("english");
+                .setGender(gender)
+                .setLanguage(language);
+
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(APIFetching.TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(APIFetching.TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .writeTimeout(APIFetching.TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+        OkHttpClient httpClient = httpClientBuilder.build();
 
         // send request
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient) // new line
                 .build();
 
         IApiService apiService = retrofit.create(IApiService.class);

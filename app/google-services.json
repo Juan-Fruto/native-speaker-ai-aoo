@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370678474865",
+    "project_id": "native-speaker-ai",
+    "storage_bucket": "native-speaker-ai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370678474865:android:9759c1d882cdd1be6ad3d0",
+        "android_client_info": {
+          "package_name": "com.juanfruto.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkNbmdj5Bl6R7jqFblTSn_ANAO-SrDOls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

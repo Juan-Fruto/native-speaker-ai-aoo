@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".Chat">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:textAlignment="center"
+        app:title="Native Speaker AI"
+        tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginTop="90dp">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layoutSendMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="160dp"
+        android:visibility="invisible">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="15dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textRecognized"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:inputType="textPersonName"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/buttonSend"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="7dp"
+            android:src="@drawable/ic_fake_icon"
+            app:civ_circle_background_color="@color/blue"
+            android:backgroundTint="@color/blue"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:gravity="center">
+
+<!--        <EditText-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="message"-->
+<!--            android:inputType="textMultiLine"-->
+<!--            android:visibility="invisible"/>-->
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/buttonSpeech"
+            android:layout_width="100dp"
+            android:layout_height="90dp"
+            android:src="@drawable/microphone"
+            android:clickable="true"
+            android:layout_marginBottom="10dp"/>
+
+    </LinearLayout>
+    
+<!--    <Button-->
+<!--        android:id="@+id/send_btn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="159dp"-->
+<!--        android:layout_marginTop="59dp"-->
+<!--        android:layout_marginEnd="159dp"-->
+<!--        android:text="Send"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/textView" />-->
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

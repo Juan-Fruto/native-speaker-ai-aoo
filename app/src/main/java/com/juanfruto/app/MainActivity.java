@@ -1,89 +1,80 @@
 package com.juanfruto.app;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import static android.content.ContentValues.TAG;
 
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
-interface IApiCallback {
-    void onApiSuccess(InputStream inputStream);
-    void onApiFailure(String error);
-}
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-public class MainActivity extends AppCompatActivity implements IApiCallback {
+public class MainActivity extends AppCompatActivity {
 
-    private Button send_button;
+    TextInputEditText textInputEmail;
+    TextInputEditText textInputPassword;
+    Button buttonLogin;
+    TextView textViewSingUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // View components
-        send_button = (Button) findViewById(R.id.send_btn);
-        send_button.setOnClickListener(v -> sendMessage("Hello World!"));
 
-        // Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        this.textInputEmail = (TextInputEditText) findViewById(R.id.textInputLoginEmail);
+        this.textInputPassword = (TextInputEditText) findViewById(R.id.textInputLoginPassword);
+
+        this.buttonLogin = (Button) findViewById(R.id.ButtonLogin);
+        this.buttonLogin.setOnClickListener(this::goToChatActivity);
+
+        this.textViewSingUp = (TextView) findViewById(R.id.textViewSingUp);
+        this.textViewSingUp.setOnClickListener(this::goToRegisterActivity);
+
+        // fct token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log
+                        String msg = "token " + token;
+                        Log.d(TAG, msg);
+                    }
+                });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_chat, menu);
-        return true;
+    public void login(View view) {
+        String email = textInputEmail.getText().toString();
+        String password = textInputPassword.getText().toString();
+
+        Log.d("debuging", "email:" + email + ", password:" + password);
     }
 
-    public void sendMessage(String message) {
-        // Fetch API
-        APIFetching apiFetching = new APIFetching(this);
-        apiFetching.message(message);
+    public void goToChatActivity(View view) {
+        Intent intent = new Intent(this, ContextActivity.class);
+        startActivity(intent);
     }
 
-    @Override
-    public void onApiSuccess(InputStream inputStream) {
-        runOnUiThread(() -> {
-            try {
-                // save the audio as a temp file
-                File tempFile = File.createTempFile("temp_audio", ".mp3", getCacheDir());
-                FileOutputStream fos = new FileOutputStream(tempFile);
-                byte[] buffer = new byte[1024];
-                int read;
-
-                while ((read = inputStream.read(buffer)) != -1) {
-                    fos.write(buffer, 0, read);
-                }
-                fos.close();
-                Log.d("Audio Path", tempFile.getAbsolutePath());
-
-                // media player settings
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC) // try speech later
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build());
-                mediaPlayer.setDataSource(tempFile.getAbsolutePath());
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    @Override
-    public void onApiFailure(String error) {
-        runOnUiThread(() -> {
-            Log.e("API Request", "Error en la solicitud: " +  error);
-        });
+    public void goToRegisterActivity(View view) {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 }
+
+
