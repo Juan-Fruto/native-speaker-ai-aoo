@@ -24,9 +24,9 @@ public class ContextActivity extends AppCompatActivity {
     public static final String LANGUAGE = "language";
     public static final String GENDER = "gender";
     private TextInputEditText textInputTitle;
-    private String userRole;
-    private String botRole;
-    private String context;
+    private TextInputEditText textInputUserRole;
+    private TextInputEditText textInputBotRole;
+    private TextInputEditText textInputContext;
     private String language;
     private String gender;
     private Button conversationButton;
@@ -37,6 +37,9 @@ public class ContextActivity extends AppCompatActivity {
         setContentView(R.layout.activity_context);
 
         this.textInputTitle = (TextInputEditText) findViewById(R.id.ConversationTitle);
+        this.textInputUserRole = (TextInputEditText) findViewById(R.id.ConversationUserRole);
+        this.textInputBotRole = (TextInputEditText) findViewById(R.id.ConversationBotRole);
+        this.textInputContext = (TextInputEditText) findViewById(R.id.ConversationContext);
 
         this.conversationButton = (Button) findViewById(R.id.conversationButton);
         this.conversationButton.setOnClickListener(this::goToChatActivity);
@@ -100,9 +103,9 @@ public class ContextActivity extends AppCompatActivity {
         Intent intent = new Intent(this, Chat.class);
 
         intent.putExtra(TITLE, this.textInputTitle.getText().toString());
-        intent.putExtra(USER_ROLE, this.userRole);
-        intent.putExtra(BOT_ROLE, this.botRole);
-        intent.putExtra(CONTEXT, this.context);
+        intent.putExtra(USER_ROLE, this.textInputUserRole.getText().toString());
+        intent.putExtra(BOT_ROLE, this.textInputBotRole.getText().toString());
+        intent.putExtra(CONTEXT, this.textInputContext.getText().toString());
         intent.putExtra(LANGUAGE, this.language);
         intent.putExtra(GENDER, this.gender);
 

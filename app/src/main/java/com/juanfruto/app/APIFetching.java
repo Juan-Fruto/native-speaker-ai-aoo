@@ -2,6 +2,7 @@ package com.juanfruto.app;
 
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -14,16 +15,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIFetching {
     private IApiCallback context;
-    private static final String BASE_URL = "http://192.168.1.7:8080/api/v1/";
+    private static final String BASE_URL = "http://192.168.1.6:8080/api/v1/";
     private static final int TIMEOUT_SECONDS = 1800;
     public APIFetching(IApiCallback context){
         this.context = context;
     }
-    public void message(String userMessage, String gender, String language){
+    public void message(String conversationContext, String userRole, String botRole, String userMessage, String gender, String language){
         // request body
+        Message systemMessage = new Message().setRole("system").setContent(conversationContext);
+        Message assistantRoleMessage = new Message().setRole("assistant").setContent(botRole);
+        Message userRoleMessage = new Message().setRole("user").setContent(userRole);
         Message message = new Message().setRole("user").setContent(userMessage);
+
         ChatRequest chatRequest = new ChatRequest()
-                .setPayload(new Message[]{message})
+                .setPayload(new Message[]{
+                        systemMessage,
+                        assistantRoleMessage,
+                        userRoleMessage,
+                        message })
                 .setGender(gender)
                 .setLanguage(language);
 
@@ -51,8 +60,14 @@ public class APIFetching {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if(response.isSuccessful()){
-                    Log.d("response", response.body().toString());
-                    context.onApiSuccess(response.body().byteStream());
+                    String decodedGptResponse = response.headers().get("X-GPT-Response");
+                    try {
+                        String gptResponse = java.net.URLDecoder.decode(decodedGptResponse, "UTF-8");
+                        Log.d("response", gptResponse);
+                        context.onApiSuccess(response.body().byteStream(), gptResponse);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     Log.d("server error", response.toString());
                 }

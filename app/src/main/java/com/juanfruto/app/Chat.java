@@ -3,6 +3,8 @@ package com.juanfruto.app;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.media.AudioAttributes;
@@ -17,29 +19,40 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.juanfruto.adapter.MessageAdapter;
+import com.juanfruto.model.Message;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 interface IApiCallback {
-    void onApiSuccess(InputStream inputStream);
+    void onApiSuccess(InputStream inputStream, String textResponse);
     void onApiFailure(String error);
 }
 
 public class Chat extends AppCompatActivity implements IApiCallback {
-
     private Toolbar toolbar;
     private CircleImageView sendButton;
-
     private CircleImageView speechButton;
     private TextInputEditText textRecognized;
-
     private LinearLayout linearLayoutSendMessage;
+    private RecyclerView recyclerViewMessage;
+    private MessageAdapter messageAdapter;
+    private List<Message> messageList = new ArrayList<>();
+
+    private String title;
+    private String userRole;
+    private String botRole;
+    private String context;
+    private String language;
+    private String gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +60,20 @@ public class Chat extends AppCompatActivity implements IApiCallback {
         setContentView(R.layout.activity_chat);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra(ContextActivity.TITLE);
-        String language = intent.getStringExtra(ContextActivity.LANGUAGE);
-        String gender = intent.getStringExtra(ContextActivity.GENDER);
+        this.title = intent.getStringExtra(ContextActivity.TITLE);
+        this.userRole = intent.getStringExtra(ContextActivity.USER_ROLE);
+        this.botRole = intent.getStringExtra(ContextActivity.BOT_ROLE);
+        this.context = intent.getStringExtra(ContextActivity.CONTEXT);
+        this.language = intent.getStringExtra(ContextActivity.LANGUAGE);
+        this.gender = intent.getStringExtra(ContextActivity.GENDER);
 
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
         this.toolbar.setTitle(title);
+        this.recyclerViewMessage = (RecyclerView) findViewById(R.id.recyclerViewMessage);
+        recyclerViewMessage.setLayoutManager(new LinearLayoutManager(this));
+        messageAdapter = new MessageAdapter(messageList);
+        recyclerViewMessage.setAdapter(messageAdapter);
+
         // View components
         speechButton = (CircleImageView) findViewById(R.id.buttonSpeech);
         speechButton.setOnClickListener(this::speak);
@@ -61,7 +82,8 @@ public class Chat extends AppCompatActivity implements IApiCallback {
         sendButton.setOnClickListener(v -> {
             linearLayoutSendMessage.setVisibility(View.INVISIBLE);
             String message = Objects.requireNonNull(textRecognized.getText()).toString();
-            sendMessage(message, gender, language);
+            sendMessage(message);
+            addMessageToChat(message, true);
         });
 
         textRecognized = (TextInputEditText) findViewById(R.id.textRecognized);
@@ -87,15 +109,22 @@ public class Chat extends AppCompatActivity implements IApiCallback {
         return true;
     }
 
-    public void sendMessage(String message, String gender, String language) {
-        Toast.makeText(this, "The message has been sended", Toast.LENGTH_SHORT).show();
+    public void sendMessage(String message) {
+        Toast.makeText(this, "The message has been sent", Toast.LENGTH_SHORT).show();
         // Fetch API
         APIFetching apiFetching = new APIFetching(this);
-        apiFetching.message(message, gender, language);
+        apiFetching.message(this.context, this.userRole, this.botRole, message, this.gender, this.language);
+    }
+
+    public void addMessageToChat(String message, boolean isUserMessage) {
+        messageList.add(new Message(message, isUserMessage));
+        messageAdapter.notifyItemInserted(messageList.size() - 1);
+        recyclerViewMessage.scrollToPosition(messageList.size() - 1);
     }
 
     @Override
-    public void onApiSuccess(InputStream inputStream) {
+    public void onApiSuccess(InputStream inputStream, String textResponse) {
+        addMessageToChat(textResponse, false);
         runOnUiThread(() -> {
             try {
                 // save the audio as a temp file
@@ -119,6 +148,7 @@ public class Chat extends AppCompatActivity implements IApiCallback {
                 mediaPlayer.setDataSource(tempFile.getAbsolutePath());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
