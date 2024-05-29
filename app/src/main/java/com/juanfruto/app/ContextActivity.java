@@ -50,13 +50,24 @@ public class ContextActivity extends AppCompatActivity {
         this.genderSpinner = (Spinner) findViewById(R.id.spinnerGender);
 
         String[] languages = {
-                "english",
-                "spanish",
-                "italian"
+                "English",
+                "Spanish",
+                "German",
+                "Italian",
+                "Japanese",
+                "Greek",
+                "Mandarin",
+                "French",
+                "Arabic",
+                "Turkish",
+                "Indonesian",
+                "Russian",
+                "Polish",
+                "Ukrainian"
         };
         String[] genders = {
-                "male",
-                "female"
+                "Male",
+                "Female"
         };
 
         ArrayAdapter<String> languageAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, languages);
@@ -106,8 +117,8 @@ public class ContextActivity extends AppCompatActivity {
         intent.putExtra(USER_ROLE, this.textInputUserRole.getText().toString());
         intent.putExtra(BOT_ROLE, this.textInputBotRole.getText().toString());
         intent.putExtra(CONTEXT, this.textInputContext.getText().toString());
-        intent.putExtra(LANGUAGE, this.language);
-        intent.putExtra(GENDER, this.gender);
+        intent.putExtra(LANGUAGE, this.language.toLowerCase());
+        intent.putExtra(GENDER, this.gender.toLowerCase());
 
         startActivity(intent);
     }

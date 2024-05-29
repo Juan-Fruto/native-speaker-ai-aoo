@@ -2,7 +2,11 @@ package com.juanfruto.app;
 
 import android.util.Log;
 
+import com.juanfruto.model.MessageUI;
+
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -20,19 +24,34 @@ public class APIFetching {
     public APIFetching(IApiCallback context){
         this.context = context;
     }
-    public void message(String conversationContext, String userRole, String botRole, String userMessage, String gender, String language){
+
+    private Message[] messageListToMessageArray(List<Message> messageList) {
+        Message[] messageArray = new Message[messageList.size()];
+        for(int i = 0; i < messageList.size(); i++) {
+            messageArray[i] = messageList.get(i);
+        }
+        return messageArray;
+    }
+    public void message(String conversationContext, String userRole, String botRole, String userMessage, List<MessageUI> history, String gender, String language){
         // request body
         Message systemMessage = new Message().setRole("system").setContent(conversationContext);
         Message assistantRoleMessage = new Message().setRole("assistant").setContent(botRole);
         Message userRoleMessage = new Message().setRole("user").setContent(userRole);
         Message message = new Message().setRole("user").setContent(userMessage);
 
+        List<Message> conversation = new ArrayList<>();
+        conversation.add(systemMessage);
+        conversation.add(assistantRoleMessage);
+        conversation.add(userRoleMessage);
+
+        for(MessageUI messageUI : history) {
+            conversation.add(new Message().setRole(messageUI.isUserMessage() ? "user" : "assistant").setContent(messageUI.getText()));
+        }
+
+        conversation.add(message);
+
         ChatRequest chatRequest = new ChatRequest()
-                .setPayload(new Message[]{
-                        systemMessage,
-                        assistantRoleMessage,
-                        userRoleMessage,
-                        message })
+                .setPayload(messageListToMessageArray(conversation))
                 .setGender(gender)
                 .setLanguage(language);
 

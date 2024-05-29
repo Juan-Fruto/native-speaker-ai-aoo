@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.juanfruto.adapter.MessageAdapter;
-import com.juanfruto.model.Message;
+import com.juanfruto.model.MessageUI;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,7 +45,7 @@ public class Chat extends AppCompatActivity implements IApiCallback {
     private LinearLayout linearLayoutSendMessage;
     private RecyclerView recyclerViewMessage;
     private MessageAdapter messageAdapter;
-    private List<Message> messageList = new ArrayList<>();
+    private List<MessageUI> messageList = new ArrayList<>();
 
     private String title;
     private String userRole;
@@ -113,11 +113,11 @@ public class Chat extends AppCompatActivity implements IApiCallback {
         Toast.makeText(this, "The message has been sent", Toast.LENGTH_SHORT).show();
         // Fetch API
         APIFetching apiFetching = new APIFetching(this);
-        apiFetching.message(this.context, this.userRole, this.botRole, message, this.gender, this.language);
+        apiFetching.message(this.context, this.userRole, this.botRole, message, messageList, this.gender, this.language);
     }
 
     public void addMessageToChat(String message, boolean isUserMessage) {
-        messageList.add(new Message(message, isUserMessage));
+        messageList.add(new MessageUI(message, isUserMessage));
         messageAdapter.notifyItemInserted(messageList.size() - 1);
         recyclerViewMessage.scrollToPosition(messageList.size() - 1);
     }

@@ -1,10 +1,10 @@
 package com.juanfruto.model;
 
-public class Message {
+public class MessageUI {
     private String text;
     private boolean isUserMessage;
 
-    public Message(String text, boolean isUserMessage) {
+    public MessageUI(String text, boolean isUserMessage) {
         this.text = text;
         this.isUserMessage = isUserMessage;
     }

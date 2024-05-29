@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.juanfruto.app.R;
-import com.juanfruto.model.Message;
+import com.juanfruto.model.MessageUI;
 
 import java.util.List;
 
@@ -17,15 +17,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int VIEW_TYPE_USER = 1;
     private static final int VIEW_TYPE_BOT = 2;
 
-    private List<Message> messageList;
+    private List<MessageUI> messageList;
 
-    public MessageAdapter(List<Message> messageList) {
+    public MessageAdapter(List<MessageUI> messageList) {
         this.messageList = messageList;
     }
 
     @Override
     public int getItemViewType(int position) {
-        Message message = messageList.get(position);
+        MessageUI message = messageList.get(position);
         if (message.isUserMessage()) {
             return VIEW_TYPE_USER;
         } else {
@@ -47,7 +47,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Message message = messageList.get(position);
+        MessageUI message = messageList.get(position);
         if (holder.getItemViewType() == VIEW_TYPE_USER) {
             ((UserMessageViewHolder) holder).bind(message);
         } else {
@@ -68,7 +68,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             textViewUserMessage = itemView.findViewById(R.id.textViewUserMessage);
         }
 
-        void bind(Message message) {
+        void bind(MessageUI message) {
             textViewUserMessage.setText(message.getText());
         }
     }
@@ -81,7 +81,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             textViewBotMessage = itemView.findViewById(R.id.textViewBotMessage);
         }
 
-        void bind(Message message) {
+        void bind(MessageUI message) {
             textViewBotMessage.setText(message.getText());
         }
     }
